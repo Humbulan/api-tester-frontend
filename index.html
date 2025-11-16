@@ -1,35 +1,125 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>API Test</title>
+    <title>Container Project API Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 15px; 
+            margin: 0; 
+            background-color: #f4f4f9;
+        }
+        h1, h2 { 
+            color: #333; 
+        }
+        button { 
+            padding: 10px 15px; 
+            margin: 5px 0; 
+            width: 100%; 
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input[type="text"] {
+            width: 100%; 
+            padding: 10px; 
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        pre { 
+            background: #e9ecef; 
+            padding: 15px; 
+            border: 1px solid #ced4da; 
+            white-space: pre-wrap; 
+            word-wrap: break-word; 
+            border-radius: 5px;
+            color: #333;
+        }
+        hr { 
+            border: 0; 
+            border-top: 1px solid #ccc; 
+            margin: 20px 0;
+        }
+    </style>
 </head>
 <body>
-    <h1>Business API Test</h1>
+    <h1>Business API Tester</h1>
+    <p>Testing your fully deployed container project API (GitHub Pages Client).</p>
+
+    <h2>1. Customer Data Test</h2>
+    <button onclick="getData()">GET /customers</button>
+    <pre id="output">Click the button to fetch customer data.</pre>
     
-    <button onclick="getData()">Test /customers</button>
-    <pre id="output"></pre>
+    <hr>
+
+    <h2>2. AI Analysis Test</h2>
+    <input type="text" id="ai-prompt" 
+           placeholder="e.g., Analyze retention rates and suggest improvements.">
+    <button onclick="postAIRequest()">POST /api/ai/chat (Run AI)</button>
+    <pre id="ai-output">Enter a query and click the button to get AI analysis.</pre>
 
     <script>
-        // Replace this URL with YOUR public API link!
+        // *** IMPORTANT: VERIFY THIS URL! ***
         const API_URL = "https://fastapi-mobile-app-7kvj.onrender.com"; 
 
+        // --- Function to test GET /customers ---
         async function getData() {
             const output = document.getElementById('output');
             output.textContent = 'Fetching data...';
 
             try {
-                // 1. Call your working /customers endpoint
+                // Call your working /customers endpoint
                 const response = await fetch(API_URL + '/customers');
                 const data = await response.json();
                 
                 if (response.ok) {
-                    // Display the customer data we verified earlier
                     output.textContent = JSON.stringify(data, null, 2);
                 } else {
-                    output.textContent = 'Error: ' + JSON.stringify(data);
+                    output.textContent = `Error (${response.status}): ${JSON.stringify(data)}`;
                 }
             } catch (error) {
-                output.textContent = 'Network Error! Check URL or server.';
+                output.textContent = `Network Error! ${error.message}`;
+            }
+        }
+
+        // --- Function to test POST /api/ai/chat ---
+        async function postAIRequest() {
+            const prompt = document.getElementById('ai-prompt').value || "Suggest a new feature for the mobile app.";
+            const outputElement = document.getElementById('ai-output');
+            outputElement.textContent = 'Analyzing... Please wait.';
+
+            const requestBody = {
+                prompt: prompt,
+                model_version: "v1" 
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/api/ai/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Display the full AI response object
+                    outputElement.textContent = JSON.stringify(data, null, 2);
+                } else {
+                    outputElement.textContent = `Error (${response.status}): ${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                outputElement.textContent = `Network Error: ${error.message}`;
             }
         }
     </script>
