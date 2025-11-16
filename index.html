@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>Business API Test</h1>
+    
+    <button onclick="getData()">Test /customers</button>
+    <pre id="output"></pre>
+
+    <script>
+        // Replace this URL with YOUR public API link!
+        const API_URL = "https://fastapi-mobile-app-7kvj.onrender.com"; 
+
+        async function getData() {
+            const output = document.getElementById('output');
+            output.textContent = 'Fetching data...';
+
+            try {
+                // 1. Call your working /customers endpoint
+                const response = await fetch(API_URL + '/customers');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Display the customer data we verified earlier
+                    output.textContent = JSON.stringify(data, null, 2);
+                } else {
+                    output.textContent = 'Error: ' + JSON.stringify(data);
+                }
+            } catch (error) {
+                output.textContent = 'Network Error! Check URL or server.';
+            }
+        }
+    </script>
+</body>
+</html>
